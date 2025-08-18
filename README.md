@@ -8,7 +8,7 @@ This repository documents my journey to study RAG using the mini-RAG playlist.
 ### Install the required packages
 
 ```bash
-$ pip install-r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 ### Setup the environment variables
@@ -22,4 +22,4 @@ Set your environment variables in the `.env` file.
 ## Run FastAPI server
 
 ```bash
-$ uvicorn main:app --reload --host 0.0.0.0 --port 5000
+$ uvicorn main:app --reload --port 8000
