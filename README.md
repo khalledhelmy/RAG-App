@@ -19,6 +19,15 @@ $ cp .env.example .env
 
 Set your environment variables in the `.env` file.
 
+## Run Docker Compose Services
+
+```bash
+$ cd docker
+$ cs .env.example .env
+```
+
+update `.env` with your credentials
+
 ## Run FastAPI server
 
 ```bash
