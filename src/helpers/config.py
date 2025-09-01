@@ -11,8 +11,21 @@ class Settings(BaseSettings):
     MONGODB_URL: str
     MONGODB_DATABASE: str
 
+    GENERATION_BACKEND: str
+    EMBEDDING_BACKEND: str
+
+    GEMINI_API_KEY: str = None
+    GEMINI_API_BASE_URL: str = None
+
+    GENERATION_MODEL_ID: str = None
+    EMBEDDING_MODEL_ID: str = None
+    EMBEDDING_MODEL_SIZE: int = None
+    INPUT_DEFAULT_MAX_CHARACTERS: int = None
+    GENERATION_DEFAULT_MAX_TOKENS: int = None
+    GENERATION_DEFAULT_TEMPERATURE: float = None
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
 def get_settings():
-    return Settings() # type: ignore
+    return Settings() 
