@@ -2,7 +2,7 @@ from .providers import QdrantDBProvider
 from .VectorDBEnums import VectorDBEnums
 from controllers.BaseController import BaseController
 
-class VectorProviderFactory:
+class VectorDBProviderFactory:
     def __init__(self, config):
         self.config = config
         self.base_controller = BaseController()
