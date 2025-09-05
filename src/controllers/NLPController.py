@@ -5,10 +5,12 @@ from typing import List
 import json
 
 class NLPController(BaseController):
-    def __init__(self, generation_client, embedding_client, vectordb_client):
+    def __init__(self, generation_client, embedding_client,
+                vectordb_client, template_parser):
         self.generation_client = generation_client
         self.embedding_client = embedding_client
         self.vectordb_client = vectordb_client
+        self.template_parser = template_parser
 
     def create_collection_name(self, project_id):
         return f'collection_{project_id}'.strip()
@@ -72,7 +74,46 @@ class NLPController(BaseController):
         if not results:
             return False
         
-        return json.loads(
-            json.dumps(results, default=lambda x: x.__dict__)
+        return results
+
+    def answer_rag_question(self, project: Project, query: str, limit: int = 10):
+        answer, full_prompt, chat_history = None, None, None
+
+        retrieved_docs = self.search_vector_db_collection(
+            project=project,
+            text=query,
+            limit=limit
         )
 
+        if not retrieved_docs or len(retrieved_docs) == 0:
+            return answer, full_prompt, chat_history
+
+        system_prompt = self.template_parser.get('rag', 'system_prompt')
+
+        document_prompts = '\n'.join([
+            self.template_parser.get('rag', 'document_prompt', {
+                'doc_num': idx,
+                'chunk_text': doc.text
+            })
+            for idx, doc in enumerate(retrieved_docs)
+        ])
+
+        footer_prompt = self.template_parser.get('rag', 'footer_prompt')
+
+        chat_history = [
+            self.generation_client.construct_prompt(
+                prompt=system_prompt,
+                role=self.generation_client.enums.SYSTEM.value
+            )
+        ]
+
+        full_prompt = '\n'.join([
+            document_prompts, footer_prompt
+        ])
+
+        answer = self.generation_client.generate_text(
+            prompt = full_prompt,
+            chat_history = chat_history
+        )
+
+        return answer, full_prompt, chat_history
