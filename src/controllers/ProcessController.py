@@ -6,7 +6,7 @@ from langchain_community.document_loaders import TextLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 class ProcessController(BaseController):
-    def __init__(self, project_id) -> None:
+    def __init__(self, project_id: str):
         super().__init__()
 
         self.project_id = project_id
@@ -16,12 +16,13 @@ class ProcessController(BaseController):
         return os.path.splitext(file_id)[-1]
     
     def get_file_loader(self, file_id: str):
+        file_ext = self.get_file_extension(file_id)
+        
         file_path = os.path.join(
             self.project_path,
             file_id
         )
 
-        file_ext = self.get_file_extension(file_id)
 
         if not os.path.exists(file_path):
             return None

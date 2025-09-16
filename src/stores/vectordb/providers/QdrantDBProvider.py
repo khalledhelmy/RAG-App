@@ -68,7 +68,7 @@ class QdrantDBProvider(VectorDBInterface):
                 collection_name=collection_name,
                 records=[
                     models.Record(
-                        id = [record_id],
+                        id = record_id,
                         vector=vector,
                         payload={
                             'text': text,
@@ -129,7 +129,7 @@ class QdrantDBProvider(VectorDBInterface):
 
         return True
     
-    def search_by_vector(self, collection_name: str, vector: list, limit: int):
+    def search_by_vector(self, collection_name: str, vector: list, limit: int = 5):
         results = self.client.search(
                 collection_name=collection_name,
                 query_vector=vector,

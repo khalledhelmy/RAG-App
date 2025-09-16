@@ -41,35 +41,46 @@ class GeminiProvider(LLMInterface):
         return text[:self.default_input_max_characters].strip()
 
     def generate_text(self, prompt: str, chat_history: list=[],
-                       max_output_tokens: int=None, temperature: float = None):
-        
+                   max_output_tokens: int=None, temperature: float=None):
         if not self.client:
-            self.logger.error('Gemini client was not set')
+            self.logger.error("Gemini client was not set")
             return None
 
         if not self.generation_model_id:
-            self.logger.error('Generation model for Gemini was not set')
+            self.logger.error("Generation model for Gemini was not set")
             return None
-        
-        max_output_tokens = max_output_tokens if max_output_tokens else self.default_generation_max_output_tokens
-        temperature = temperature if temperature else self.default_generation_temperature
+
+        max_output_tokens = max_output_tokens or self.default_generation_max_output_tokens
+        temperature = temperature or self.default_generation_temperature
 
         chat_history.append(
             self.construct_prompt(prompt=prompt, role=GeminiEnums.USER.value)
         )
 
         response = self.client.chat.completions.create(
-            model = self.generation_model_id,
-            messages = chat_history,
-            max_tokens = max_output_tokens,
-            temperature = temperature
+            model=self.generation_model_id,
+            messages=chat_history,
+            max_tokens=max_output_tokens,
+            temperature=temperature,
         )
 
-        if not response or not response.choices or len(response.choices) == 0 or not response.choices[0].message:
-            self.logger.error('Error while generating text with Gemini')
+        if not response or not response.choices:
+            self.logger.error("No choices in Gemini response")
             return None
 
-        return response.choices[0].message.content
+        choice = response.choices[0]
+        content = None
+        if hasattr(choice, "message") and choice.message:
+            content = choice.message.get("content") if isinstance(choice.message, dict) else choice.message.content
+        elif hasattr(choice, "text"):
+            content = choice.text
+
+        if not content:
+            self.logger.error("Gemini response has no text content")
+            return None
+
+        return content.strip()
+
 
 
     def embed_text(self, text: str, document_type: str = None):

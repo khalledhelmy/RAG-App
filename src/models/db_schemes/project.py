@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import Optional
-from bson import ObjectId
+from bson.objectid import ObjectId
 
 class Project(BaseModel):
     id: Optional[ObjectId] = Field(None, alias='_id')
