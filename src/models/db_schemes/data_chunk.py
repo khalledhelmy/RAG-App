@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from bson import ObjectId
+from bson.objectid import ObjectId
 
 class DataChunk(BaseModel):
     id: Optional[ObjectId] = Field(None, alias='_id')

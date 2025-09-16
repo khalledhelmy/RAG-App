@@ -56,9 +56,9 @@ class ProjectModel(BaseDataModel):
 
         cursor = self.collection.find().skip((page - 1) * page_size).limit(page_size)
         projects = []
-        async for documnet in cursor:
+        async for document in cursor:
             projects.append(
-                Project(**documnet)
+                Project(**document)
             )
         
         return projects, total_pages

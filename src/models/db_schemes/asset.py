@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from bson import ObjectId
+from bson.objectid import ObjectId
 from datetime import datetime
 
 class Asset(BaseModel):
@@ -10,7 +10,7 @@ class Asset(BaseModel):
     asset_name: str = Field(..., min_length=1)
     asset_size: int = Field(ge=0, default=None)
     asset_config: dict = Field(default=None)
-    asset_push_at: datetime = Field(default=datetime.utcnow)
+    asset_pushed_at: datetime = Field(default=datetime.utcnow)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

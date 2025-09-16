@@ -7,7 +7,7 @@ from models.ChunkModel import ChunkModel
 from controllers import NLPController
 import logging
 
-logger = logging.error('uvicorn-error')
+logger = logging.getLogger('uvicorn.error')
 
 nlp_router = APIRouter(
     prefix='/api/v0/nlp',
@@ -39,7 +39,8 @@ async def index_project(request: Request, project_id: str, push_request: PushReq
     nlp_controller = NLPController(
         generation_client=request.app.generation_client,
         embedding_client=request.app.embedding_client,
-        vectordb_client=request.app.vectordb_client
+        vectordb_client=request.app.vectordb_client,
+        template_parser=request.app.template_parser
     )
 
     has_records = True
@@ -83,7 +84,7 @@ async def index_project(request: Request, project_id: str, push_request: PushReq
             }
         )
 
-@nlp_router.get('index/info/{project_id}')
+@nlp_router.get('/index/info/{project_id}')
 async def get_project_index_inf(request: Request, project_id: str):
     project_model = await ProjectModel.create_instance(
         db_client=request.app.db_client
@@ -96,7 +97,8 @@ async def get_project_index_inf(request: Request, project_id: str):
     nlp_controller = NLPController(
         generation_client=request.app.generation_client,
         embedding_client=request.app.embedding_client,
-        vectordb_client=request.app.vectordb_client
+        vectordb_client=request.app.vectordb_client,
+        template_parser=request.app.template_parser
     )
 
     collection_info = nlp_controller.get_vector_db_collection_info(project=project)

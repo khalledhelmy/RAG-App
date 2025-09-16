@@ -7,12 +7,14 @@ import json
 class NLPController(BaseController):
     def __init__(self, generation_client, embedding_client,
                 vectordb_client, template_parser):
+        super().__init__()
+
         self.generation_client = generation_client
         self.embedding_client = embedding_client
         self.vectordb_client = vectordb_client
         self.template_parser = template_parser
 
-    def create_collection_name(self, project_id):
+    def create_collection_name(self, project_id: str):
         return f'collection_{project_id}'.strip()
     
     def reset_vector_db_collection(self, project: Project):
@@ -92,13 +94,15 @@ class NLPController(BaseController):
 
         document_prompts = '\n'.join([
             self.template_parser.get('rag', 'document_prompt', {
-                'doc_num': idx,
+                'doc_num': idx + 1,
                 'chunk_text': doc.text
             })
             for idx, doc in enumerate(retrieved_docs)
         ])
 
-        footer_prompt = self.template_parser.get('rag', 'footer_prompt')
+        footer_prompt = self.template_parser.get('rag', 'footer_prompt', {
+            "query": query
+        })
 
         chat_history = [
             self.generation_client.construct_prompt(
@@ -107,7 +111,7 @@ class NLPController(BaseController):
             )
         ]
 
-        full_prompt = '\n'.join([
+        full_prompt = '\n\n'.join([
             document_prompts, footer_prompt
         ])
 
